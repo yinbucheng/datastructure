@@ -1,5 +1,8 @@
 package com.bucheng.structure.net.nio;
 
+import com.bucheng.structure.net.nio.handler.LineStringFrameDecode;
+import com.bucheng.structure.net.nio.handler.StringLineEncode;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -12,7 +15,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class NIOClient {
-    static Charset charset = Charset.forName("UTF-8");
     private static volatile Selector selector;
     private static volatile AtomicInteger count = new AtomicInteger(0);
 
@@ -37,7 +39,8 @@ public class NIOClient {
                                 client.finishConnect();
                                 sk.interestOps(SelectionKey.OP_READ);
                                 Thread.sleep(2000);
-                                client.write(charset.encode("我们已经完成3次握手,时间为:"+NioUtils.currentTime()+"\r\n"));
+                                StringLineEncode encode = new StringLineEncode();
+                                client.write(encode.encode("我们已经完成3次握手,时间为:" + NioUtils.currentTime()));
                             } catch (Exception e) {
                                 System.err.println("--------->连接失败:" + e);
                             }
@@ -45,24 +48,24 @@ public class NIOClient {
                         if (sk.readyOps() == SelectionKey.OP_READ) {
                             count.getAndSet(0);
                             SocketChannel client = (SocketChannel) sk.attachment();
-                            String content = "";
                             ByteBuffer buffer = ByteBuffer.allocate(1024);
+                            LineStringFrameDecode decode = new LineStringFrameDecode();
                             while (client.read(buffer) > 0) {
-                                buffer.flip();
-                                content += charset.decode(buffer);
+                                String content = decode.decode(buffer);
+                                System.out.println("Revice:" + content);
                             }
-                            System.out.println("Revice:" + content);
                             sk.interestOps(SelectionKey.OP_READ);
                             Thread.sleep(2000);
-                            client.write(charset.encode("我是客户端消息，当前时间:"+NioUtils.currentTime()+"\r\n"));
+                            StringLineEncode encode = new StringLineEncode();
+                            client.write(encode.encode("我是客户端消息，当前时间:" + NioUtils.currentTime()));
                         }
                     }
                 } else {
                     long endTime = System.currentTimeMillis();
-                    if(endTime-pretime<10) {
+                    if (endTime - pretime < 10) {
                         int number = count.incrementAndGet();
                         if (number >= 512) {
-                           selector = NioUtils.reboudSelector(selector,count);
+                            selector = NioUtils.reboudSelector(selector, count);
                         }
                     }
                 }

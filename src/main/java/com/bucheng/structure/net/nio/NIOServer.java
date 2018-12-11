@@ -1,5 +1,8 @@
 package com.bucheng.structure.net.nio;
 
+import com.bucheng.structure.net.nio.handler.LineStringFrameDecode;
+import com.bucheng.structure.net.nio.handler.StringLineEncode;
+
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
@@ -15,7 +18,6 @@ public class NIOServer {
     private static AtomicInteger count = new AtomicInteger(0);
 
     public static void main(String[] args) throws Exception {
-        final Charset charset = Charset.forName("UTF-8");
         bossSelector = Selector.open();
         workSelector = Selector.open();
         ServerSocketChannel server = null;
@@ -40,7 +42,8 @@ public class NIOServer {
                                     //将客户端绑定到selector上面并注册事件
                                     sc.register(workSelector, SelectionKey.OP_READ, sc);
                                     Thread.sleep(2000);
-                                    sc.write(charset.encode("获取到客户端请求连接,当前时间为:"+NioUtils.currentTime()+"\r\n"));
+                                    StringLineEncode encode = new StringLineEncode();
+                                    sc.write(encode.encode("获取到客户端请求连接,当前时间为:" + NioUtils.currentTime()));
                                     //再次向selector上面注册事件
                                     sk.interestOps(SelectionKey.OP_ACCEPT);
                                 }
@@ -67,17 +70,17 @@ public class NIOServer {
                                         if (sk.readyOps() == SelectionKey.OP_READ) {
                                             count.getAndSet(0);
                                             SocketChannel channel = (SocketChannel) sk.attachment();
-                                            String content = "";
                                             ByteBuffer buffer = ByteBuffer.allocate(1024);
                                             try {
+                                                LineStringFrameDecode decode = new LineStringFrameDecode();
                                                 while (channel.read(buffer) > 0) {
-                                                    buffer.flip();
-                                                    content += charset.decode(buffer);
+                                                    String content = decode.decode(buffer);
+                                                    System.out.println("Revice:" + content);
                                                 }
-                                                System.out.println("Revice:" + content);
                                                 sk.interestOps(SelectionKey.OP_READ);
                                                 Thread.sleep(3000);
-                                                channel.write(charset.encode("已经获取客户端消息,当前时间:"+NioUtils.currentTime()+"\r\n"));
+                                                StringLineEncode encode = new StringLineEncode();
+                                                channel.write(encode.encode("已经获取客户端消息,当前时间:" + NioUtils.currentTime()));
                                             } catch (Exception e) {
                                                 //取消客户端上面事件
                                                 sk.cancel();
@@ -91,10 +94,10 @@ public class NIOServer {
                                 }
                             } else {
                                 long endtime = System.currentTimeMillis();
-                                if(endtime-pretime<10) {
+                                if (endtime - pretime < 10) {
                                     int number = count.incrementAndGet();
                                     if (number > 520) {
-                                        workSelector = NioUtils.reboudSelector(workSelector,count);
+                                        workSelector = NioUtils.reboudSelector(workSelector, count);
                                     }
                                 }
                             }

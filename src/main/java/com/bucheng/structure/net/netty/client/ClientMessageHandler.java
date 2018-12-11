@@ -2,6 +2,8 @@ package com.bucheng.structure.net.netty.client;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
 
 /**
  * @ClassName ClientMessageHandler
@@ -17,5 +19,16 @@ public class ClientMessageHandler extends SimpleChannelInboundHandler<String> {
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
         ctx.writeAndFlush("first connection");
+    }
+
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        super.userEventTriggered(ctx, evt);
+        if(evt instanceof IdleStateEvent){
+            IdleStateEvent event = (IdleStateEvent) evt;
+            if(event.state().equals(IdleState.WRITER_IDLE)){
+                ctx.writeAndFlush("ping");
+            }
+        }
     }
 }
