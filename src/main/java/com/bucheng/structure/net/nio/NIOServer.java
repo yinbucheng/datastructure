@@ -40,7 +40,7 @@ public class NIOServer {
                                     //将客户端绑定到selector上面并注册事件
                                     sc.register(workSelector, SelectionKey.OP_READ, sc);
                                     Thread.sleep(2000);
-                                    sc.write(charset.encode("获取到客户端请求连接,当前时间为:"+NioUtils.currentTime()));
+                                    sc.write(charset.encode("获取到客户端请求连接,当前时间为:"+NioUtils.currentTime()+"\r\n"));
                                     //再次向selector上面注册事件
                                     sk.interestOps(SelectionKey.OP_ACCEPT);
                                 }
@@ -77,7 +77,7 @@ public class NIOServer {
                                                 System.out.println("Revice:" + content);
                                                 sk.interestOps(SelectionKey.OP_READ);
                                                 Thread.sleep(3000);
-                                                channel.write(charset.encode("已经获取客户端消息,当前时间:"+NioUtils.currentTime()));
+                                                channel.write(charset.encode("已经获取客户端消息,当前时间:"+NioUtils.currentTime()+"\r\n"));
                                             } catch (Exception e) {
                                                 //取消客户端上面事件
                                                 sk.cancel();

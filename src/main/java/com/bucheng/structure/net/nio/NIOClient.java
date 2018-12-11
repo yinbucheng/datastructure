@@ -37,7 +37,7 @@ public class NIOClient {
                                 client.finishConnect();
                                 sk.interestOps(SelectionKey.OP_READ);
                                 Thread.sleep(2000);
-                                client.write(charset.encode("我们已经完成3次握手,时间为:"+NioUtils.currentTime()));
+                                client.write(charset.encode("我们已经完成3次握手,时间为:"+NioUtils.currentTime()+"\r\n"));
                             } catch (Exception e) {
                                 System.err.println("--------->连接失败:" + e);
                             }
@@ -54,7 +54,7 @@ public class NIOClient {
                             System.out.println("Revice:" + content);
                             sk.interestOps(SelectionKey.OP_READ);
                             Thread.sleep(2000);
-                            client.write(charset.encode("我是客户端消息，当前时间:"+NioUtils.currentTime()));
+                            client.write(charset.encode("我是客户端消息，当前时间:"+NioUtils.currentTime()+"\r\n"));
                         }
                     }
                 } else {
