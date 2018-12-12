@@ -12,8 +12,8 @@ public class GCTest {
     public static void main(String[] args) {
         for (; ; ) {
             test(1024 * 1024 * 40);
-            System.out.println("----------------->gc invoke");
-            System.gc();
+//            System.out.println("----------------->gc invoke");
+//            System.gc();
         }
     }
 
