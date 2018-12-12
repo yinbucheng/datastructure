@@ -16,7 +16,7 @@ public class CASTest {
 //       final  ConcurrentLinked list = new ConcurrentLinked();
         Executor executor = Executors.newFixedThreadPool(10);
 
-        for(int i=0;i<4;i++){
+        for(int i=0;i<1;i++){
             executor.execute(new Runnable() {
                 public void run() {
                     System.out.println("romve thread start:"+Thread.currentThread().getName());
