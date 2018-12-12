@@ -10,11 +10,13 @@ import io.netty.handler.codec.MessageToByteEncoder;
  * @Date 2018/12/12 18:45
  * 这里是将快要写入到netty中ByteBuf添加一个头而头就是内容的长度，头的长度为4个字节
  **/
-public class FixLengthEncoder extends MessageToByteEncoder<ByteBuf> {
+public class FixLengthEncoder extends MessageToByteEncoder<byte[]> {
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, ByteBuf msg, ByteBuf out) throws Exception {
-       int length = msg.readableBytes();
+    protected void encode(ChannelHandlerContext ctx, byte[] msg, ByteBuf out) throws Exception {
+       if(msg==null||msg.length==0)
+           return;
+       int length = msg.length;
        out.writeInt(length);
        out.writeBytes(msg);
     }
