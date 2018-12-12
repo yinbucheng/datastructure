@@ -37,7 +37,7 @@ public class NettyServer {
 //                    ch.pipeline().addFirst("encode1", new LineEncoder());
 //                    ch.pipeline().addFirst("encode2", new StringEncoder());
 //                    ch.pipeline().addLast("decode3", new MessageHandler());
-                    ch.pipeline().addLast("lengthDecoder",new LengthFieldBasedFrameDecoder(1024,0,4));
+                    ch.pipeline().addLast("lengthDecoder",new LengthFieldBasedFrameDecoder(1024,0,4,0,4));
                     ch.pipeline().addLast("stringDecoder",new StringDecoder());
                     ch.pipeline().addFirst("stringEncoder",new StringEncoder());
                     ch.pipeline().addFirst("lengthEncoder",new LengthFieldPrepender(4));

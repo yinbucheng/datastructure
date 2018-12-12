@@ -20,4 +20,9 @@ public class StringDecoder extends MessageToMessageDecoder<byte[]> {
         String content = new String(msg,"utf-8");
         out.add(content);
     }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        super.channelInactive(ctx);
+    }
 }

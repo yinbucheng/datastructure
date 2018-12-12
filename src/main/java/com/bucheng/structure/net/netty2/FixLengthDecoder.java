@@ -39,4 +39,9 @@ public class FixLengthDecoder extends ByteToMessageDecoder {
         out.add(buffer);
     }
 
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        super.channelInactive(ctx);
+    }
 }
