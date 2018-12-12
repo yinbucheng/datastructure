@@ -35,41 +35,13 @@ public class NettyClient {
                         @Override
                         protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
                             System.out.println("Revice:"+msg);
-                            ctx.writeAndFlush("nice");
+//                            ctx.writeAndFlush("nice");
                         }
 
                         @Override
                         public void channelActive(final ChannelHandlerContext ctx) throws Exception {
                             System.out.println("------------>完成连接");
                             super.channelActive(ctx);
-                            Thread thread = new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                   for(;;) {
-                                       try {
-                                           Thread.sleep(10000);
-                                           ctx.writeAndFlush("ative send message");
-                                       } catch (InterruptedException e) {
-                                           e.printStackTrace();
-                                       }
-                                   }
-                                }
-                            });
-                            thread.start();
-                            Thread thread2 = new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    for(;;) {
-                                        try {
-                                            Thread.sleep(10000);
-                                            ctx.writeAndFlush("you are the best one");
-                                        } catch (InterruptedException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                }
-                            });
-                            thread2.start();
                         }
 
                         @Override

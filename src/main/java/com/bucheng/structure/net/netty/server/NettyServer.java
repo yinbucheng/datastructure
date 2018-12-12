@@ -1,14 +1,12 @@
 package com.bucheng.structure.net.netty.server;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.LineBasedFrameDecoder;
-import io.netty.handler.codec.string.LineEncoder;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.codec.LengthFieldPrepender;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.timeout.IdleStateHandler;
@@ -34,11 +32,21 @@ public class NettyServer {
             bootstrap.childHandler(new ChannelInitializer<NioSocketChannel>() {
                 protected void initChannel(NioSocketChannel ch) throws Exception {
                     ch.pipeline().addLast("timeout", new IdleStateHandler(0, 5, 0, TimeUnit.SECONDS));
-                    ch.pipeline().addLast("decode1", new LineBasedFrameDecoder(1024));
-                    ch.pipeline().addLast("decode2", new StringDecoder());
-                    ch.pipeline().addFirst("encode1", new LineEncoder());
-                    ch.pipeline().addFirst("encode2", new StringEncoder());
-                    ch.pipeline().addLast("decode3", new MessageHandler());
+//                    ch.pipeline().addLast("decode1", new LineBasedFrameDecoder(1024));
+//                    ch.pipeline().addLast("decode2", new StringDecoder());
+//                    ch.pipeline().addFirst("encode1", new LineEncoder());
+//                    ch.pipeline().addFirst("encode2", new StringEncoder());
+//                    ch.pipeline().addLast("decode3", new MessageHandler());
+                    ch.pipeline().addLast("lengthDecoder",new LengthFieldBasedFrameDecoder(1024,0,4));
+                    ch.pipeline().addLast("stringDecoder",new StringDecoder());
+                    ch.pipeline().addFirst("stringEncoder",new StringEncoder());
+                    ch.pipeline().addFirst("lengthEncoder",new LengthFieldPrepender(4));
+                    ch.pipeline().addLast("myHandler", new SimpleChannelInboundHandler<String>() {
+                        protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
+                            System.out.println("Recvie:"+msg);
+                            ctx.writeAndFlush("lalala");
+                        }
+                    });
                 }
             });
 
