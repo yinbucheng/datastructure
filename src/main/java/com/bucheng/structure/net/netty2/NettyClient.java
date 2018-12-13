@@ -26,7 +26,7 @@ public class NettyClient {
             bootstrap.handler(new ChannelInitializer<NioSocketChannel>() {
                 @Override
                 protected void initChannel(NioSocketChannel ch) throws Exception {
-                    ch.pipeline().addLast("timeoutHandler",new IdleStateHandler(0,5,0, TimeUnit.SECONDS));
+                    ch.pipeline().addLast("timeoutHandler",new IdleStateHandler(0,1,0, TimeUnit.SECONDS));
                     ch.pipeline().addLast("decoder1", new FixLengthDecoder());
                     ch.pipeline().addLast("decoder2",new StringDecoder());
                     ch.pipeline().addFirst("encode1",new StringEncoder());

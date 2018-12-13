@@ -32,11 +32,6 @@ public class NettyServer {
             bootstrap.childHandler(new ChannelInitializer<NioSocketChannel>() {
                 protected void initChannel(NioSocketChannel ch) throws Exception {
                     ch.pipeline().addLast("timeout", new IdleStateHandler(0, 5, 0, TimeUnit.SECONDS));
-//                    ch.pipeline().addLast("decode1", new LineBasedFrameDecoder(1024));
-//                    ch.pipeline().addLast("decode2", new StringDecoder());
-//                    ch.pipeline().addFirst("encode1", new LineEncoder());
-//                    ch.pipeline().addFirst("encode2", new StringEncoder());
-//                    ch.pipeline().addLast("decode3", new MessageHandler());
                     ch.pipeline().addLast("lengthDecoder",new LengthFieldBasedFrameDecoder(1024,0,4,0,4));
                     ch.pipeline().addLast("stringDecoder",new StringDecoder());
                     ch.pipeline().addFirst("stringEncoder",new StringEncoder());
